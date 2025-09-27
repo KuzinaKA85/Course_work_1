@@ -115,3 +115,43 @@ def filter_by_state(data: list[dict], state: str = "OK") -> list[dict]:
             new_data.append(item)
 
     return new_data
+
+
+def get_card_infos(transactions: list[dict]) -> list[dict]:
+    """ Возвращает инфомацию о картах """
+
+    if not transactions:
+        return []
+
+    df = pd.DataFrame(transactions)
+
+    cards = []
+
+    negative_df = df[df["Сумма платежа"] < 0]
+    data = negative_df.groupby("Номер карты")["Сумма платежа"].sum()
+
+    for card_number, total_amount in data.items():
+
+        card_number = get_last_four(str(card_number))
+        total_spent = abs(round(total_amount, 2))
+        cashback = get_cashback(total_spent)
+        card_info = dict(last_digits=card_number, total_spent=total_spent, cashback=cashback)
+        cards.append(card_info)
+
+    return cards
+
+
+def get_top_transactions(transactions: list[dict]) -> list[dict]:
+    """ Выводит топ топ-5 транзакций по сумме платежа """
+
+    data = sorted(transactions, key=lambda x: abs(x["Сумма платежа"]), reverse=True)[:5]
+    result = []
+    for i, transaction in enumerate(data, 1):
+        transaction_info = dict(
+            date=transaction["Дата платежа"],
+            amount=transaction["Сумма платежа"],
+            category=transaction["Категория"],
+            description=transaction["Описание"],
+        )
+        result.append(transaction_info)
+    return result
