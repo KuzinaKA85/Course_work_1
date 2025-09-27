@@ -29,3 +29,4 @@ def simple_search(search_string: str, filepath: str) -> list[dict]:
     return new_data
 
 pprint(simple_search("переводы", "../data/operations.xlsx"))
+
