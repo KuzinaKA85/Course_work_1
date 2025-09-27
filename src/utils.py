@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
 import pandas as pd
 import requests
@@ -198,7 +199,42 @@ def get_stock(stocks: list) -> list:
             stocks_info = dict(stock=stock, price=round(response_to_float, 2))
             result.append(stocks_info)
         else:
-            logger.warning(f"The request ended with an error {response.json()}")
+            logger.warning(f"Запрос завершился ошибкой {response.json()}")
             result.append(response.json())
 
     return result
+
+
+def get_date(date: str) -> str:
+    """ Возвращает дату из формата ГГГГ-ММ-ДД в ДД.ММ.ГГГГ """
+
+    year = date[:4]
+    month = date[5:7]
+    day = date[8:10]
+    new_date = day + "." + month + "." + year
+
+    try:
+        datetime.strptime(new_date, "%d.%m.%Y")
+        return new_date
+    except ValueError:
+        return date
+
+
+def filter_by_date(data: list[dict], start_date: str, end_date: str) -> list[dict]:
+    """ Фильтрует список словарей в промежутке star_date и end_date по значению "Дата платежа" """
+
+    start_dt = datetime.strptime(start_date, "%d.%m.%Y")
+    end_dt = datetime.strptime(end_date, "%d.%m.%Y")
+
+    filter_date = []
+    for item in data:
+        date_value = str(item["Дата платежа"]).strip().lower()
+        if date_value == "nan" or date_value == "":
+            continue
+
+        item_date = datetime.strptime(str(item["Дата платежа"]), "%d.%m.%Y")
+
+        if start_dt <= item_date <= end_dt:
+            filter_date.append(item)
+
+    return filter_date
