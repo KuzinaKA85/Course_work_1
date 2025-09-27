@@ -61,3 +61,42 @@ def read_transactions_xlsx(file_path: str) -> list[dict]:
 
 # file_path_1 = Path("..", "data", "operations.xlsx")
 # print(read_transactions_xlsx(file_path_1))
+
+def load_json_data(file_path: str) -> dict:
+    """
+    Функция возвращает данные о финансовых транзакциях из JSON
+    """
+    try:
+        if not os.path.exists(file_path):
+            logger.warning("Файл не найден")
+            return {}
+
+        if os.path.getsize(file_path) == 0:
+            logger.warning("Файл пуст")
+            return {}
+
+        with open(file_path, "r", encoding="utf-8") as file:
+            logger.info(f"Чтение файла из: {file_path}")
+            data = json.load(file)
+
+        if isinstance(data, dict):
+            return data
+        else:
+            logger.warning("Файл содержит данные не в json-формате")
+            return {}
+
+    except (json.JSONDecodeError, FileNotFoundError, PermissionError, OSError):
+        logger.error("Некорректные данные")
+        return {}
+
+# file_path_2 = Path("..", "user_settings.json")
+# print(load_json_data(file_path_2))
+
+
+def get_last_four(input_string: str) -> str:
+    """
+    Функция для возвращения последний четырёх символов
+    """
+    if input_string:
+        return input_string[-4:]
+    return "None"
