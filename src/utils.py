@@ -19,9 +19,7 @@ logger.addHandler(file_handler)
 
 
 def get_greeting(now_hour: int) -> str:
-    """
-    Функция возвращает приветствие в зависимости от текущего времени
-    """
+    """ Функция возвращает приветствие в зависимости от текущего времени """
     message = ""
 
     if 6 <= now_hour < 12:
@@ -37,9 +35,7 @@ def get_greeting(now_hour: int) -> str:
 
 
 def read_transactions_xlsx(file_path: str) -> list[dict]:
-    """
-    Функция для считывания финансовых операций из Excel
-    """
+    """ Функция для считывания финансовых операций из Excel """
 
     if not os.path.exists(file_path):
         logger.warning("Файл не найден")
@@ -63,9 +59,8 @@ def read_transactions_xlsx(file_path: str) -> list[dict]:
 # print(read_transactions_xlsx(file_path_1))
 
 def load_json_data(file_path: str) -> dict:
-    """
-    Функция возвращает данные о финансовых транзакциях из JSON
-    """
+    """ Функция возвращает данные о финансовых транзакциях из JSON """
+
     try:
         if not os.path.exists(file_path):
             logger.warning("Файл не найден")
@@ -94,9 +89,29 @@ def load_json_data(file_path: str) -> dict:
 
 
 def get_last_four(input_string: str) -> str:
-    """
-    Функция для возвращения последний четырёх символов
-    """
+    """ Функция для возвращения последний четырёх символов """
+
     if input_string:
         return input_string[-4:]
     return "None"
+
+
+def get_cashback(total_spent: float) -> float:
+    """ Функция для расчёта кешбека """
+
+    return round((total_spent / 100), 2)
+
+
+def filter_by_state(data: list[dict], state: str = "OK") -> list[dict]:
+    """ Фильтрует список словарей по значению ключа 'state' """
+
+    if not data:
+        raise ValueError("Пустой список")
+
+    new_data = list()
+
+    for item in data:
+        if item.get("Статус") == state:
+            new_data.append(item)
+
+    return new_data
