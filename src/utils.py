@@ -168,13 +168,14 @@ def get_top_transactions(transactions: list[dict]) -> list[dict]:
 def get_current_exchange_rate(currency_codes: list) -> list:
     """ Функция возврата текущего курса """
 
-    url = "https://api.apilayer.com/exchangerates_data/latest"
+    url = r"https://api.apilayer.com/exchangerates_data/latest"
 
     headers = {"apikey": API_KEY_FOR_CURRENT_EXCHANGE_RATE}
     result = []
     for code in currency_codes:
         params = {"symbols": "RUB", "base": code}
         response = requests.get(url, headers=headers, params=params)
+        response.encoding = 'utf-8'
         response_to_float = float(response.json()["rates"]["RUB"])
 
         currency_code_info = dict(currency=code, rate=round(response_to_float, 2))
@@ -182,11 +183,16 @@ def get_current_exchange_rate(currency_codes: list) -> list:
 
     return result
 
+# if __name__ == "__main__":
+#     currencies = ["USD", "EUR"]
+#     results = get_current_exchange_rate(currencies)
+#     print(results)
+
 
 def get_stock(stocks: list) -> list:
     """ Функция возврата текущего курса """
 
-    url = "https://www.alphavantage.co/query"
+    url = r"https://www.alphavantage.co/query"
 
     result = []
     for stock in stocks:
