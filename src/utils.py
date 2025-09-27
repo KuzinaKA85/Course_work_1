@@ -3,6 +3,8 @@ import logging
 import os
 from pathlib import Path
 import pandas as pd
+import requests
+from dotenv import load_dotenv
 
 
 MODULE_DIR = Path(__file__).resolve().parent
@@ -16,6 +18,11 @@ file_handler = logging.FileHandler(log_file, mode="w", encoding="utf-8")
 file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(funcName)s: %(message)s")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
+
+load_dotenv("../.env")
+
+API_KEY_FOR_CURRENT_EXCHANGE_RATE = os.getenv("API_KEY_FOR_CURRENT_EXCHANGE_RATE")
+API_KEY_ALPHA_VANTAGE = os.getenv("API_KEY_ALPHA_VANTAGE")
 
 
 def get_greeting(now_hour: int) -> str:
@@ -154,4 +161,44 @@ def get_top_transactions(transactions: list[dict]) -> list[dict]:
             description=transaction["Описание"],
         )
         result.append(transaction_info)
+    return result
+
+
+def get_current_exchange_rate(currency_codes: list) -> list:
+    """ Функция возврата текущего курса """
+
+    url = "https://api.apilayer.com/exchangerates_data/latest"
+
+    headers = {"apikey": API_KEY_FOR_CURRENT_EXCHANGE_RATE}
+    result = []
+    for code in currency_codes:
+        params = {"symbols": "RUB", "base": code}
+        response = requests.get(url, headers=headers, params=params)
+        response_to_float = float(response.json()["rates"]["RUB"])
+
+        currency_code_info = dict(currency=code, rate=round(response_to_float, 2))
+        result.append(currency_code_info)
+
+    return result
+
+
+def get_stock(stocks: list) -> list:
+    """ Функция возврата текущего курса """
+
+    url = "https://www.alphavantage.co/query"
+
+    result = []
+    for stock in stocks:
+        params = {"function": "GLOBAL_QUOTE", "symbol": stock, "apikey": API_KEY_ALPHA_VANTAGE}
+        response = requests.get(url, params=params)
+
+        global_quote = response.json().get("Global Quote")
+        if global_quote is not None:
+            response_to_float = float(response.json()["Global Quote"]["05. price"])
+            stocks_info = dict(stock=stock, price=round(response_to_float, 2))
+            result.append(stocks_info)
+        else:
+            logger.warning(f"The request ended with an error {response.json()}")
+            result.append(response.json())
+
     return result
