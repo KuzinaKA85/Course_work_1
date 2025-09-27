@@ -27,23 +27,23 @@ API_KEY_ALPHA_VANTAGE = os.getenv("API_KEY_ALPHA_VANTAGE")
 
 
 def get_greeting(now_hour: int) -> str:
-    """ Функция возвращает приветствие в зависимости от текущего времени """
+    """Функция возвращает приветствие в зависимости от текущего времени"""
     message = ""
 
-    if 6 <= now_hour < 12:
+    if 0 <= now_hour < 6:
+        message = "Доброй ночи!"
+    elif 6 <= now_hour < 12:
         message = "Доброе утро!"
     elif 12 <= now_hour < 18:
         message = "Добрый день!"
     elif 18 <= now_hour < 24:
         message = "Добрый вечер!"
-    else:
-        message = "Доброй ночи!"
 
     return message
 
 
 def read_transactions_xlsx(file_path: str) -> list[dict]:
-    """ Функция для считывания финансовых операций из Excel """
+    """Функция для считывания финансовых операций из Excel"""
 
     if not os.path.exists(file_path):
         logger.warning("Файл не найден")
@@ -63,11 +63,13 @@ def read_transactions_xlsx(file_path: str) -> list[dict]:
         logger.warning("Файл содержит не список")
         return []
 
+
 # file_path_1 = Path("..", "data", "operations.xlsx")
 # print(read_transactions_xlsx(file_path_1))
 
+
 def load_json_data(file_path: str) -> dict:
-    """ Функция возвращает данные о финансовых транзакциях из JSON """
+    """Функция возвращает данные о финансовых транзакциях из JSON"""
 
     try:
         if not os.path.exists(file_path):
@@ -92,12 +94,13 @@ def load_json_data(file_path: str) -> dict:
         logger.error("Некорректные данные")
         return {}
 
+
 # file_path_2 = Path("..", "user_settings.json")
 # print(load_json_data(file_path_2))
 
 
 def get_last_four(input_string: str) -> str:
-    """ Функция для возвращения последний четырёх символов """
+    """Функция для возвращения последний четырёх символов"""
 
     if input_string:
         return input_string[-4:]
@@ -105,13 +108,13 @@ def get_last_four(input_string: str) -> str:
 
 
 def get_cashback(total_spent: float) -> float:
-    """ Функция для расчёта кешбека """
+    """Функция для расчёта кешбека"""
 
     return round((total_spent / 100), 2)
 
 
 def filter_by_state(data: list[dict], state: str = "OK") -> list[dict]:
-    """ Фильтрует список словарей по значению ключа 'state' """
+    """Фильтрует список словарей по значению ключа 'state'"""
 
     if not data:
         raise ValueError("Пустой список")
@@ -126,7 +129,7 @@ def filter_by_state(data: list[dict], state: str = "OK") -> list[dict]:
 
 
 def get_card_infos(transactions: list[dict]) -> list[dict]:
-    """ Возвращает инфомацию о картах """
+    """Возвращает инфомацию о картах"""
 
     if not transactions:
         return []
@@ -150,7 +153,7 @@ def get_card_infos(transactions: list[dict]) -> list[dict]:
 
 
 def get_top_transactions(transactions: list[dict]) -> list[dict]:
-    """ Выводит топ топ-5 транзакций по сумме платежа """
+    """Выводит топ топ-5 транзакций по сумме платежа"""
 
     data = sorted(transactions, key=lambda x: abs(x["Сумма платежа"]), reverse=True)[:5]
     result = []
@@ -166,7 +169,7 @@ def get_top_transactions(transactions: list[dict]) -> list[dict]:
 
 
 def get_current_exchange_rate(currency_codes: list) -> list:
-    """ Функция возврата текущего курса """
+    """Функция возврата текущего курса"""
 
     url = r"https://api.apilayer.com/exchangerates_data/latest"
 
@@ -175,13 +178,14 @@ def get_current_exchange_rate(currency_codes: list) -> list:
     for code in currency_codes:
         params = {"symbols": "RUB", "base": code}
         response = requests.get(url, headers=headers, params=params)
-        response.encoding = 'utf-8'
+        response.encoding = "utf-8"
         response_to_float = float(response.json()["rates"]["RUB"])
 
         currency_code_info = dict(currency=code, rate=round(response_to_float, 2))
         result.append(currency_code_info)
 
     return result
+
 
 # if __name__ == "__main__":
 #     currencies = ["USD", "EUR"]
@@ -190,7 +194,7 @@ def get_current_exchange_rate(currency_codes: list) -> list:
 
 
 def get_stock(stocks: list) -> list:
-    """ Функция возврата текущего курса """
+    """Функция возврата текущего курса"""
 
     url = r"https://www.alphavantage.co/query"
 
@@ -212,7 +216,7 @@ def get_stock(stocks: list) -> list:
 
 
 def get_date(date: str) -> str:
-    """ Возвращает дату из формата ГГГГ-ММ-ДД в ДД.ММ.ГГГГ """
+    """Возвращает дату из формата ГГГГ-ММ-ДД в ДД.ММ.ГГГГ"""
 
     year = date[:4]
     month = date[5:7]
@@ -227,7 +231,7 @@ def get_date(date: str) -> str:
 
 
 def filter_by_date(data: list[dict], start_date: str, end_date: str) -> list[dict]:
-    """ Фильтрует список словарей в промежутке star_date и end_date по значению "Дата платежа" """
+    """Фильтрует список словарей в промежутке star_date и end_date по значению "Дата платежа" """
 
     start_dt = datetime.strptime(start_date, "%d.%m.%Y")
     end_dt = datetime.strptime(end_date, "%d.%m.%Y")
