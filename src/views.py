@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from pprint import pprint
 from typing import Any, Dict
@@ -16,7 +17,7 @@ from src.utils import (
 )
 
 
-def main_page(date_string: str) -> dict:
+def main_page(date_string: str) -> str:
     """Возвращает информацию для главной страницы"""
 
     date_end_of_month = get_date(date_string)
@@ -36,7 +37,7 @@ def main_page(date_string: str) -> dict:
     user_stocks = user_settings.get("user_stocks", [])
 
     now_hour = datetime.now().hour
-    result: Dict[str, Any] = {
+    total: Dict[str, Any] = {
         "greeting": get_greeting(now_hour),
         "cards": get_card_infos(filtered_transactions),
         "top_transactions": get_top_transactions(filtered_transactions),
@@ -44,7 +45,9 @@ def main_page(date_string: str) -> dict:
         "stock_prices": get_stock(user_stocks),
     }
 
-    return result
+    result_json = json.dumps(total, ensure_ascii=False, indent=2)
+
+    return result_json
 
 
-pprint(main_page("2021-12-31 16:44:00"))
+# pprint(main_page("2021-12-31 16:44:00"))
