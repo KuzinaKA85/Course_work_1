@@ -132,4 +132,3 @@ def test_json_structure_and_content(
     assert parsed_result["cards"][0]["last_digits"] == "5555"
     assert parsed_result["currency_rates"][0]["currency"] == "USD"
     assert parsed_result["stock_prices"][0]["stock"] == "TSLA"
-

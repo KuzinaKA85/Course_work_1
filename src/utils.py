@@ -3,10 +3,10 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
+
 import pandas as pd
 import requests
 from dotenv import load_dotenv
-
 
 MODULE_DIR = Path(__file__).resolve().parent
 LOG_DIR = MODULE_DIR.parent / "logs"
@@ -64,10 +64,6 @@ def read_transactions_xlsx(file_path: str) -> list[dict]:
         return []
 
 
-# file_path_1 = Path("..", "data", "operations.xlsx")
-# print(read_transactions_xlsx(file_path_1))
-
-
 def load_json_data(file_path: str) -> dict:
     """Функция возвращает данные о финансовых транзакциях из JSON"""
 
@@ -95,12 +91,8 @@ def load_json_data(file_path: str) -> dict:
         return {}
 
 
-# file_path_2 = Path("..", "user_settings.json")
-# print(load_json_data(file_path_2))
-
-
 def get_last_four(input_string: str) -> str:
-    """Функция для возвращения последний четырёх символов"""
+    """Функция для возвращения последний четырёх символов карты"""
 
     if input_string:
         return input_string[-4:]
@@ -153,7 +145,7 @@ def get_card_infos(transactions: list[dict]) -> list[dict]:
 
 
 def get_top_transactions(transactions: list[dict]) -> list[dict]:
-    """Выводит топ топ-5 транзакций по сумме платежа"""
+    """Выводит топ-5 транзакций по сумме платежа"""
 
     data = sorted(transactions, key=lambda x: abs(x["Сумма платежа"]), reverse=True)[:5]
     result = []
@@ -185,12 +177,6 @@ def get_current_exchange_rate(currency_codes: list) -> list:
         result.append(currency_code_info)
 
     return result
-
-
-# if __name__ == "__main__":
-#     currencies = ["USD", "EUR"]
-#     results = get_current_exchange_rate(currencies)
-#     print(results)
 
 
 def get_stock(stocks: list) -> list:

@@ -4,9 +4,20 @@ from unittest.mock import Mock, patch
 import pandas as pd
 import pytest
 
-from src.utils import (filter_by_date, filter_by_state, get_card_infos, get_cashback, get_current_exchange_rate,
-                       get_date, get_greeting, get_last_four, get_stock, get_top_transactions, load_json_data,
-                       read_transactions_xlsx)
+from src.utils import (
+    filter_by_date,
+    filter_by_state,
+    get_card_infos,
+    get_cashback,
+    get_current_exchange_rate,
+    get_date,
+    get_greeting,
+    get_last_four,
+    get_stock,
+    get_top_transactions,
+    load_json_data,
+    read_transactions_xlsx,
+)
 
 
 @pytest.mark.parametrize(
